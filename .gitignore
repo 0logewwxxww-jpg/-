@@ -1,0 +1,27 @@
+# Flutter / Dart
+.dart_tool/
+.packages
+.pub/
+build/
+.flutter-plugins
+.flutter-plugins-dependencies
+
+# Node
+node_modules/
+.next/
+out/
+dist/
+
+# Secrets
+.env
+.env.*
+!.env.example
+*.jks
+*.keystore
+key.properties
+
+# IDE / OS
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
