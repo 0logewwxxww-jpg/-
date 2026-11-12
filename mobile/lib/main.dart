@@ -14,7 +14,7 @@ class JawadainApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const green = Color(0xFF176B52);
+    const green = Color(0xFF5876D8);
     return MaterialApp(
       title: 'مدرسة الجوادين الإلكترونية',
       debugShowCheckedModeBanner: false,
@@ -24,11 +24,12 @@ class JawadainApp extends StatelessWidget {
       theme: ThemeData(
         useMaterial3: true,
         colorScheme: ColorScheme.fromSeed(seedColor: green),
-        scaffoldBackgroundColor: const Color(0xFFF5F7F5),
+        scaffoldBackgroundColor: const Color(0xFFE8EAFE),
         fontFamily: 'Cairo',
         appBarTheme: const AppBarTheme(
-          backgroundColor: Colors.white,
-          foregroundColor: Color(0xFF173D32),
+          backgroundColor: Colors.transparent,
+          foregroundColor: Color(0xFF26345E),
+          surfaceTintColor: Colors.transparent,
           elevation: 0,
           centerTitle: false,
         ),
@@ -50,8 +51,8 @@ class _SchoolHomeScreenState extends State<SchoolHomeScreen> {
   late DateTime now;
   Timer? clockTimer;
 
-  static const green = Color(0xFF176B52);
-  static const ink = Color(0xFF173D32);
+  static const green = Color(0xFF5876D8);
+  static const ink = Color(0xFF26345E);
   static const news = [
     'أهلاً وسهلاً بكم في تطبيق مدرسة الجوادين الإلكتروني',
     'تابعوا إعلانات المدرسة والتعليمات عبر هذه النافذة',
@@ -137,10 +138,20 @@ class _SchoolHomeScreenState extends State<SchoolHomeScreen> {
               icon: const Icon(Icons.notifications_none_rounded)),
           ],
         ),
-        body: IndexedStack(index: selectedIndex, children: pages),
+        body: Container(
+          decoration: const BoxDecoration(gradient: LinearGradient(
+            begin: Alignment.topLeft, end: Alignment.bottomRight,
+            colors: [Color(0xFFF6E9F0), Color(0xFFDCE2FF), Color(0xFF8299ED)],
+            stops: [0.0, 0.52, 1.0],
+          )),
+          child: IndexedStack(index: selectedIndex, children: pages),
+        ),
         bottomNavigationBar: NavigationBar(
           selectedIndex: selectedIndex,
           onDestinationSelected: (i) => setState(() => selectedIndex = i),
+          backgroundColor: const Color(0xDDF4F6FF),
+          surfaceTintColor: Colors.transparent,
+          indicatorColor: const Color(0xFFCBD6FF),
           destinations: const [
             NavigationDestination(icon: Icon(Icons.home_outlined), selectedIcon: Icon(Icons.home_rounded), label: 'الرئيسية'),
             NavigationDestination(icon: Icon(Icons.grid_view_rounded), label: 'الخدمات'),
@@ -184,10 +195,12 @@ class _SchoolHomeScreenState extends State<SchoolHomeScreen> {
   Widget _welcomeCard() => Container(
     padding: const EdgeInsets.all(20),
     decoration: BoxDecoration(
-      gradient: const LinearGradient(colors: [Color(0xFF155D49), Color(0xFF25866A)],
+      gradient: LinearGradient(
+        colors: [Colors.white.withValues(alpha: .78), const Color(0xFFDCE4FF).withValues(alpha: .62), const Color(0xFF9DB2F5).withValues(alpha: .72)],
         begin: Alignment.topRight, end: Alignment.bottomLeft),
       borderRadius: BorderRadius.circular(23),
-      boxShadow: [BoxShadow(color: green.withValues(alpha: .18), blurRadius: 18, offset: const Offset(0, 8))],
+      border: Border.all(color: Colors.white.withValues(alpha: .85), width: 1.2),
+      boxShadow: [BoxShadow(color: const Color(0xFF536FC4).withValues(alpha: .16), blurRadius: 24, offset: const Offset(0, 10))],
     ),
     child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       Row(children: [
@@ -210,7 +223,7 @@ class _SchoolHomeScreenState extends State<SchoolHomeScreen> {
 
   Widget _newsBar() => Container(
     height: 52, padding: const EdgeInsets.symmetric(horizontal: 12),
-    decoration: BoxDecoration(color: const Color(0xFFE8F2ED), borderRadius: BorderRadius.circular(14)),
+    decoration: BoxDecoration(color: Colors.white.withValues(alpha: .48), borderRadius: BorderRadius.circular(14), border: Border.all(color: Colors.white.withValues(alpha: .8))),
     child: Row(children: [
       const Icon(Icons.campaign_rounded, color: green),
       const SizedBox(width: 8),
@@ -231,14 +244,14 @@ class _SchoolHomeScreenState extends State<SchoolHomeScreen> {
 
   Widget _serviceCard(String title, IconData icon, Color color, String description) =>
     Material(
-      color: Colors.white, borderRadius: BorderRadius.circular(18),
+      color: Colors.white.withValues(alpha: .48), borderRadius: BorderRadius.circular(18),
       child: InkWell(
         borderRadius: BorderRadius.circular(18),
         onTap: () => openService(title, description, icon),
         child: Container(
           padding: const EdgeInsets.all(15),
           decoration: BoxDecoration(borderRadius: BorderRadius.circular(18),
-            border: Border.all(color: const Color(0xFFE9EEEA))),
+            border: Border.all(color: Colors.white.withValues(alpha: .85))),
           child: Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
             Container(width: 43, height: 43,
               decoration: BoxDecoration(color: color.withValues(alpha: .11), borderRadius: BorderRadius.circular(13)),
@@ -285,7 +298,7 @@ class _SchoolHomeScreenState extends State<SchoolHomeScreen> {
       ].map((item) => Padding(
         padding: const EdgeInsets.only(bottom: 10),
         child: ListTile(
-          tileColor: Colors.white, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+          tileColor: Colors.white.withValues(alpha: .52), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(17), side: BorderSide(color: Colors.white.withValues(alpha: .8))),
           leading: CircleAvatar(backgroundColor: const Color(0xFFE8F2ED), child: Icon(item[1] as IconData, color: green)),
           title: Text(item[0] as String, style: const TextStyle(fontWeight: FontWeight.bold)),
           subtitle: Text(item[2] as String),
