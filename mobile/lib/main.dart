@@ -215,7 +215,10 @@ class AdminDashboardScreen extends StatelessWidget {
       child: Scaffold(
         appBar: AppBar(title: const Text('لوحة إدارة المدرسة'),
           actions: [IconButton(tooltip: 'تسجيل الخروج',
-            onPressed: () async { await Supabase.instance.client.auth.signOut(); },
+            onPressed: () async {
+              await Supabase.instance.client.auth.signOut();
+              if (context.mounted) Navigator.of(context).popUntil((route) => route.isFirst);
+            },
             icon: const Icon(Icons.logout_rounded))]),
         body: Container(
           decoration: const BoxDecoration(gradient: LinearGradient(
