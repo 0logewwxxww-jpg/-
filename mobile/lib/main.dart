@@ -1,3 +1,4 @@
+import 'dart:ui' as ui;
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -94,7 +95,7 @@ class _SchoolHomeScreenState extends State<SchoolHomeScreen> {
             Container(width: 42, height: 4, decoration: BoxDecoration(
               color: Colors.black12, borderRadius: BorderRadius.circular(8))),
             const SizedBox(height: 22),
-            CircleAvatar(radius: 30, backgroundColor: green.withOpacity(.10),
+            CircleAvatar(radius: 30, backgroundColor: green.withValues(alpha: .10),
               child: Icon(icon, color: green, size: 30)),
             const SizedBox(height: 14),
             Text(title, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: ink)),
@@ -123,12 +124,12 @@ class _SchoolHomeScreenState extends State<SchoolHomeScreen> {
       _aboutPage(),
     ];
     return Directionality(
-      textDirection: TextDirection.rtl,
+      textDirection: ui.TextDirection.rtl,
       child: Scaffold(
         appBar: AppBar(
           title: Row(children: [
             Container(width: 42, height: 42,
-              decoration: BoxDecoration(color: green.withOpacity(.10), borderRadius: BorderRadius.circular(13)),
+              decoration: BoxDecoration(color: green.withValues(alpha: .10), borderRadius: BorderRadius.circular(13)),
               child: const Icon(Icons.school_rounded, color: green, size: 25)),
             const SizedBox(width: 10),
             const Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -191,14 +192,14 @@ class _SchoolHomeScreenState extends State<SchoolHomeScreen> {
       gradient: const LinearGradient(colors: [Color(0xFF155D49), Color(0xFF25866A)],
         begin: Alignment.topRight, end: Alignment.bottomLeft),
       borderRadius: BorderRadius.circular(23),
-      boxShadow: [BoxShadow(color: green.withOpacity(.18), blurRadius: 18, offset: const Offset(0, 8))],
+      boxShadow: [BoxShadow(color: green.withValues(alpha: .18), blurRadius: 18, offset: const Offset(0, 8))],
     ),
     child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       Row(children: [
         const Expanded(child: Text('مرحباً بكم في\nمدرسة الجوادين',
           style: TextStyle(color: Colors.white, fontSize: 22, fontWeight: FontWeight.bold, height: 1.45))),
         Container(width: 62, height: 62,
-          decoration: BoxDecoration(color: Colors.white.withOpacity(.15), borderRadius: BorderRadius.circular(18)),
+          decoration: BoxDecoration(color: Colors.white.withValues(alpha: .15), borderRadius: BorderRadius.circular(18)),
           child: const Icon(Icons.account_balance_rounded, color: Colors.white, size: 34)),
       ]),
       const SizedBox(height: 18),
@@ -220,7 +221,7 @@ class _SchoolHomeScreenState extends State<SchoolHomeScreen> {
       const SizedBox(width: 8),
       const Text('الأخبار', style: TextStyle(color: ink, fontWeight: FontWeight.bold, fontSize: 12)),
       const SizedBox(width: 10),
-      Container(width: 1, height: 23, color: green.withOpacity(.2)),
+      Container(width: 1, height: 23, color: green.withValues(alpha: .2)),
       const SizedBox(width: 10),
       Expanded(child: _NewsTicker(items: news)),
     ]),
@@ -245,7 +246,7 @@ class _SchoolHomeScreenState extends State<SchoolHomeScreen> {
             border: Border.all(color: const Color(0xFFE9EEEA))),
           child: Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
             Container(width: 43, height: 43,
-              decoration: BoxDecoration(color: color.withOpacity(.11), borderRadius: BorderRadius.circular(13)),
+              decoration: BoxDecoration(color: color.withValues(alpha: .11), borderRadius: BorderRadius.circular(13)),
               child: Icon(icon, color: color, size: 24)),
             Row(children: [
               Expanded(child: Text(title, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: ink))),
