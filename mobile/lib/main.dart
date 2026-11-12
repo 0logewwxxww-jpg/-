@@ -243,33 +243,52 @@ class _SchoolHomeScreenState extends State<SchoolHomeScreen> {
     ]);
 
   Widget _serviceCard(String title, IconData icon, Color color, String description) =>
-    Material(
-      color: Colors.white.withValues(alpha: .48), borderRadius: BorderRadius.circular(18),
-      child: InkWell(
-        borderRadius: BorderRadius.circular(18),
-        onTap: () => openService(title, description, icon),
-        child: Container(
-          padding: const EdgeInsets.all(15),
-          decoration: BoxDecoration(borderRadius: BorderRadius.circular(18),
-            border: Border.all(color: Colors.white.withValues(alpha: .85))),
-          child: Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-            Container(width: 43, height: 43,
-              decoration: BoxDecoration(color: color.withValues(alpha: .11), borderRadius: BorderRadius.circular(13)),
-              child: Icon(icon, color: color, size: 24)),
-            Row(children: [
-              Expanded(child: Text(title, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: ink))),
-              const Icon(Icons.arrow_back_ios_new_rounded, size: 12, color: Colors.black38),
-            ]),
-          ]),
+    ClipRRect(
+      borderRadius: BorderRadius.circular(20),
+      child: BackdropFilter(
+        filter: ui.ImageFilter.blur(sigmaX: 14, sigmaY: 14),
+        child: Material(
+          color: Colors.white.withValues(alpha: .38),
+          child: InkWell(
+            onTap: () => openService(title, description, icon),
+            child: Container(
+              padding: const EdgeInsets.all(15),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(20),
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft, end: Alignment.bottomRight,
+                  colors: [Colors.white.withValues(alpha: .70), Colors.white.withValues(alpha: .28)],
+                ),
+                border: Border.all(color: Colors.white.withValues(alpha: .88), width: 1.1),
+                boxShadow: [BoxShadow(color: const Color(0xFF526FC5).withValues(alpha: .10), blurRadius: 18, offset: const Offset(0, 7))],
+              ),
+              child: Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+                Container(width: 43, height: 43,
+                  decoration: BoxDecoration(color: color.withValues(alpha: .12), borderRadius: BorderRadius.circular(13)),
+                  child: Icon(icon, color: color, size: 24)),
+                Row(children: [
+                  Expanded(child: Text(title, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: ink))),
+                  const Icon(Icons.arrow_back_ios_new_rounded, size: 12, color: Colors.black38),
+                ]),
+              ]),
+            ),
+          ),
         ),
       ),
     );
 
-  Widget _parentCard() => Container(
-    padding: const EdgeInsets.all(17),
-    decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(18),
-      border: Border.all(color: const Color(0xFFE9EEEA))),
-    child: Row(children: [
+  Widget _parentCard() => ClipRRect(
+    borderRadius: BorderRadius.circular(20),
+    child: BackdropFilter(
+      filter: ui.ImageFilter.blur(sigmaX: 14, sigmaY: 14),
+      child: Container(
+        padding: const EdgeInsets.all(17),
+        decoration: BoxDecoration(
+          color: Colors.white.withValues(alpha: .48),
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: Colors.white.withValues(alpha: .9)),
+        ),
+        child: Row(children: [
       const CircleAvatar(backgroundColor: Color(0xFFE8F2ED), child: Icon(Icons.family_restroom_rounded, color: green)),
       const SizedBox(width: 12),
       const Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -278,7 +297,9 @@ class _SchoolHomeScreenState extends State<SchoolHomeScreen> {
       ])),
       FilledButton.tonal(onPressed: () => openService('بوابة ولي الأمر', 'سيتم تفعيل حسابات أولياء الأمور وربطها بملفات الطلبة.', Icons.family_restroom_rounded),
         child: const Text('دخول')),
-    ]),
+        ]),
+      ),
+    ),
   );
 
   Widget _servicesPage() => ListView(
@@ -320,9 +341,23 @@ class _SchoolHomeScreenState extends State<SchoolHomeScreen> {
       const SizedBox(height: 8),
       const Center(child: Text('التطبيق الإلكتروني الرسمي للمدرسة', style: TextStyle(color: Colors.black54))),
       const SizedBox(height: 25),
-      const Card(child: Padding(padding: EdgeInsets.all(18), child: Text(
-        'تهدف هذه المنصة إلى تسهيل التواصل بين المدرسة وأولياء الأمور، وتوفير الخدمات والمعلومات المدرسية في مكان واحد.',
-        textAlign: TextAlign.center, style: TextStyle(height: 1.8)))),
+      ClipRRect(
+        borderRadius: BorderRadius.circular(20),
+        child: BackdropFilter(
+          filter: ui.ImageFilter.blur(sigmaX: 12, sigmaY: 12),
+          child: Container(
+            padding: const EdgeInsets.all(18),
+            decoration: BoxDecoration(
+              color: Colors.white.withValues(alpha: .52),
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(color: Colors.white.withValues(alpha: .88)),
+            ),
+            child: const Text(
+              'تهدف هذه المنصة إلى تسهيل التواصل بين المدرسة وأولياء الأمور، وتوفير الخدمات والمعلومات المدرسية في مكان واحد.',
+              textAlign: TextAlign.center, style: TextStyle(height: 1.8, color: ink)),
+          ),
+        ),
+      ),
       const SizedBox(height: 12),
       const ListTile(leading: Icon(Icons.verified_user_outlined, color: green), title: Text('منصة مدرسية قيد التطوير')),
       const ListTile(leading: Icon(Icons.calendar_today_outlined, color: green), title: Text('الإصدار التجريبي 2026')),
