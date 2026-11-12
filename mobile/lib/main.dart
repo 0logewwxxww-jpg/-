@@ -50,9 +50,245 @@ class JawadainApp extends StatelessWidget {
           centerTitle: false,
         ),
       ),
-      home: const SchoolHomeScreen(),
+      home: const AuthGate(),
     );
   }
+}
+
+
+class AuthGate extends StatelessWidget {
+  const AuthGate({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final client = Supabase.instance.client;
+    return StreamBuilder<AuthState>(
+      stream: client.auth.onAuthStateChange,
+      builder: (context, snapshot) {
+        final session = snapshot.data?.session ?? client.auth.currentSession;
+        return session == null ? const SchoolHomeScreen() : const AdminDashboardScreen();
+      },
+    );
+  }
+}
+
+class AdminLoginScreen extends StatefulWidget {
+  const AdminLoginScreen({super.key});
+  @override
+  State<AdminLoginScreen> createState() => _AdminLoginScreenState();
+}
+
+class _AdminLoginScreenState extends State<AdminLoginScreen> {
+  final emailController = TextEditingController();
+  final passwordController = TextEditingController();
+  bool busy = false;
+  bool obscurePassword = true;
+  String? errorMessage;
+
+  @override
+  void dispose() {
+    emailController.dispose();
+    passwordController.dispose();
+    super.dispose();
+  }
+
+  Future<void> login() async {
+    if (emailController.text.trim().isEmpty || passwordController.text.isEmpty) {
+      setState(() => errorMessage = 'يرجى إدخال البريد الإلكتروني وكلمة المرور.');
+      return;
+    }
+    setState(() { busy = true; errorMessage = null; });
+    try {
+      await Supabase.instance.client.auth.signInWithPassword(
+        email: emailController.text.trim(),
+        password: passwordController.text,
+      );
+      if (!mounted) return;
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(builder: (_) => const AdminDashboardScreen()),
+        (route) => route.isFirst,
+      );
+    } on AuthException catch (e) {
+      setState(() => errorMessage = e.message);
+    } catch (_) {
+      setState(() => errorMessage = 'تعذر تسجيل الدخول. تحقق من الاتصال وحاول مجدداً.');
+    } finally {
+      if (mounted) setState(() => busy = false);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    const primary = Color(0xFF5876D8);
+    const ink = Color(0xFF26345E);
+    return Directionality(
+      textDirection: ui.TextDirection.rtl,
+      child: Scaffold(
+        backgroundColor: const Color(0xFFE8EAFE),
+        appBar: AppBar(title: const Text('دخول الإدارة')),
+        body: Container(
+          decoration: const BoxDecoration(gradient: LinearGradient(
+            begin: Alignment.topLeft, end: Alignment.bottomRight,
+            colors: [Color(0xFFF6E9F0), Color(0xFFDCE2FF), Color(0xFF8299ED)])),
+          child: Center(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(22),
+              child: Container(
+                padding: const EdgeInsets.all(24),
+                decoration: BoxDecoration(
+                  color: Colors.white.withValues(alpha: .72),
+                  borderRadius: BorderRadius.circular(24),
+                  border: Border.all(color: Colors.white.withValues(alpha: .9))),
+                child: Column(mainAxisSize: MainAxisSize.min, children: [
+                  const CircleAvatar(radius: 35, backgroundColor: Color(0xFFE8ECFF),
+                    child: Icon(Icons.admin_panel_settings_rounded, color: primary, size: 38)),
+                  const SizedBox(height: 16),
+                  const Text('بوابة إدارة مدرسة الجوادين',
+                    style: TextStyle(fontSize: 19, fontWeight: FontWeight.bold, color: ink)),
+                  const SizedBox(height: 7),
+                  const Text('سجّل الدخول باستخدام حساب المدير',
+                    style: TextStyle(color: Colors.black54, fontSize: 12)),
+                  const SizedBox(height: 24),
+                  TextField(
+                    controller: emailController,
+                    keyboardType: TextInputType.emailAddress,
+                    textDirection: ui.TextDirection.ltr,
+                    decoration: InputDecoration(labelText: 'البريد الإلكتروني',
+                      prefixIcon: const Icon(Icons.email_outlined), filled: true,
+                      fillColor: Colors.white.withValues(alpha: .7),
+                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(14)))),
+                  const SizedBox(height: 14),
+                  TextField(
+                    controller: passwordController,
+                    obscureText: obscurePassword,
+                    onSubmitted: (_) { if (!busy) login(); },
+                    decoration: InputDecoration(labelText: 'كلمة المرور',
+                      prefixIcon: const Icon(Icons.lock_outline_rounded),
+                      suffixIcon: IconButton(
+                        onPressed: () => setState(() => obscurePassword = !obscurePassword),
+                        icon: Icon(obscurePassword ? Icons.visibility_outlined : Icons.visibility_off_outlined)),
+                      filled: true, fillColor: Colors.white.withValues(alpha: .7),
+                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(14)))),
+                  if (errorMessage != null) ...[
+                    const SizedBox(height: 12),
+                    Text(errorMessage!, style: const TextStyle(color: Colors.red, fontSize: 12)),
+                  ],
+                  const SizedBox(height: 20),
+                  SizedBox(width: double.infinity, height: 50,
+                    child: FilledButton(
+                      onPressed: busy ? null : login,
+                      child: busy ? const SizedBox(width: 22, height: 22,
+                        child: CircularProgressIndicator(strokeWidth: 2))
+                        : const Text('تسجيل الدخول'))),
+                ]),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class AdminDashboardScreen extends StatelessWidget {
+  const AdminDashboardScreen({super.key});
+
+  Future<String> _adminName() async {
+    final user = Supabase.instance.client.auth.currentUser;
+    if (user == null) return 'مدير المدرسة';
+    final row = await Supabase.instance.client.from('profiles')
+      .select('full_name, role, is_active').eq('id', user.id).maybeSingle();
+    if (row == null || row['role'] != 'admin' || row['is_active'] != true) {
+      await Supabase.instance.client.auth.signOut();
+      throw const AuthException('هذا الحساب غير مخوّل لدخول لوحة الإدارة.');
+    }
+    return (row['full_name'] as String?) ?? 'مدير المدرسة';
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    const ink = Color(0xFF26345E);
+    const primary = Color(0xFF5876D8);
+    return Directionality(
+      textDirection: ui.TextDirection.rtl,
+      child: Scaffold(
+        appBar: AppBar(title: const Text('لوحة إدارة المدرسة'),
+          actions: [IconButton(tooltip: 'تسجيل الخروج',
+            onPressed: () async { await Supabase.instance.client.auth.signOut(); },
+            icon: const Icon(Icons.logout_rounded))]),
+        body: Container(
+          decoration: const BoxDecoration(gradient: LinearGradient(
+            begin: Alignment.topLeft, end: Alignment.bottomRight,
+            colors: [Color(0xFFF6E9F0), Color(0xFFDCE2FF), Color(0xFF8299ED)])),
+          child: FutureBuilder<String>(
+            future: _adminName(),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const Center(child: CircularProgressIndicator());
+              }
+              if (snapshot.hasError) {
+                return Center(child: Padding(padding: const EdgeInsets.all(24),
+                  child: Text(snapshot.error.toString(), textAlign: TextAlign.center,
+                    style: const TextStyle(color: Colors.red))));
+              }
+              return ListView(padding: const EdgeInsets.all(20), children: [
+                Container(padding: const EdgeInsets.all(22),
+                  decoration: BoxDecoration(color: Colors.white.withValues(alpha: .62),
+                    borderRadius: BorderRadius.circular(22),
+                    border: Border.all(color: Colors.white.withValues(alpha: .9))),
+                  child: Row(children: [
+                    const CircleAvatar(radius: 28, backgroundColor: Color(0xFFE8ECFF),
+                      child: Icon(Icons.person_rounded, color: primary, size: 30)),
+                    const SizedBox(width: 14),
+                    Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                      const Text('مرحباً بك', style: TextStyle(color: Colors.black54, fontSize: 12)),
+                      Text(snapshot.data!, style: const TextStyle(color: ink,
+                        fontWeight: FontWeight.bold, fontSize: 17)),
+                      const Text('صلاحية مدير المدرسة', style: TextStyle(color: primary, fontSize: 11)),
+                    ])),
+                  ])),
+                const SizedBox(height: 22),
+                const Text('إدارة المدرسة', style: TextStyle(color: ink,
+                  fontWeight: FontWeight.bold, fontSize: 19)),
+                const SizedBox(height: 12),
+                const _AdminTile(icon: Icons.people_alt_outlined, title: 'الطلبة', subtitle: 'إدارة ملفات الطلبة'),
+                const _AdminTile(icon: Icons.class_outlined, title: 'الصفوف والشُعب', subtitle: 'إدارة الصفوف الدراسية'),
+                const _AdminTile(icon: Icons.fact_check_outlined, title: 'الحضور والغياب', subtitle: 'متابعة سجلات الحضور'),
+                const _AdminTile(icon: Icons.grade_outlined, title: 'الدرجات والنتائج', subtitle: 'إدارة درجات الطلبة'),
+                const _AdminTile(icon: Icons.campaign_outlined, title: 'الإعلانات', subtitle: 'نشر إعلانات المدرسة'),
+                const _AdminTile(icon: Icons.calendar_month_outlined, title: 'الجدول الدراسي', subtitle: 'تنظيم الحصص والجداول'),
+                const SizedBox(height: 12),
+                const Text('هذه أقسام الواجهة الأولية؛ سيتم تفعيل عمليات الإضافة والتعديل والحفظ تدريجياً.',
+                  textAlign: TextAlign.center, style: TextStyle(color: Colors.black54, fontSize: 11, height: 1.6)),
+              ]);
+            },
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _AdminTile extends StatelessWidget {
+  const _AdminTile({required this.icon, required this.title, required this.subtitle});
+  final IconData icon;
+  final String title;
+  final String subtitle;
+
+  @override
+  Widget build(BuildContext context) => Container(
+    margin: const EdgeInsets.only(bottom: 10),
+    decoration: BoxDecoration(color: Colors.white.withValues(alpha: .52),
+      borderRadius: BorderRadius.circular(16),
+      border: Border.all(color: Colors.white.withValues(alpha: .85))),
+    child: ListTile(
+      leading: Icon(icon, color: const Color(0xFF5876D8)),
+      title: Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
+      subtitle: Text(subtitle),
+      trailing: const Icon(Icons.chevron_left_rounded),
+    ),
+  );
 }
 
 class SchoolHomeScreen extends StatefulWidget {
@@ -150,6 +386,11 @@ class _SchoolHomeScreenState extends State<SchoolHomeScreen> {
             ])),
           ]),
           actions: [
+            IconButton(
+              tooltip: 'دخول الإدارة',
+              onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const AdminLoginScreen())),
+              icon: const Icon(Icons.admin_panel_settings_outlined),
+            ),
             IconButton(onPressed: () => openService('الإشعارات', 'ستظهر هنا إشعارات المدرسة وأخبارها الرسمية.', Icons.notifications_none_rounded),
               icon: const Icon(Icons.notifications_none_rounded)),
           ],
