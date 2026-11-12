@@ -14,7 +14,7 @@ class JawadainApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const green = Color(0xFF278B63);
+    const green = Color(0xFF5876D8);
     return MaterialApp(
       title: 'مدرسة الجوادين الإلكترونية',
       debugShowCheckedModeBanner: false,
@@ -24,11 +24,11 @@ class JawadainApp extends StatelessWidget {
       theme: ThemeData(
         useMaterial3: true,
         colorScheme: ColorScheme.fromSeed(seedColor: green),
-        scaffoldBackgroundColor: const Color(0xFFEAF7F0),
+        scaffoldBackgroundColor: const Color(0xFFE8EAFE),
         fontFamily: 'Cairo',
         appBarTheme: const AppBarTheme(
           backgroundColor: Colors.transparent,
-          foregroundColor: Color(0xFF194B39),
+          foregroundColor: Color(0xFF26345E),
           surfaceTintColor: Colors.transparent,
           elevation: 0,
           centerTitle: false,
@@ -51,8 +51,8 @@ class _SchoolHomeScreenState extends State<SchoolHomeScreen> {
   late DateTime now;
   Timer? clockTimer;
 
-  static const green = Color(0xFF278B63);
-  static const ink = Color(0xFF194B39);
+  static const green = Color(0xFF5876D8);
+  static const ink = Color(0xFF26345E);
   static const news = [
     'أهلاً وسهلاً بكم في تطبيق مدرسة الجوادين الإلكتروني',
     'تابعوا إعلانات المدرسة والتعليمات عبر هذه النافذة',
@@ -141,7 +141,7 @@ class _SchoolHomeScreenState extends State<SchoolHomeScreen> {
         body: Container(
           decoration: const BoxDecoration(gradient: LinearGradient(
             begin: Alignment.topLeft, end: Alignment.bottomRight,
-            colors: [Color(0xFFF0F8F3), Color(0xFFD6F0E2), Color(0xFF83CDA8)],
+            colors: [Color(0xFFF6E9F0), Color(0xFFDCE2FF), Color(0xFF8299ED)],
             stops: [0.0, 0.52, 1.0],
           )),
           child: IndexedStack(index: selectedIndex, children: pages),
@@ -149,9 +149,9 @@ class _SchoolHomeScreenState extends State<SchoolHomeScreen> {
         bottomNavigationBar: NavigationBar(
           selectedIndex: selectedIndex,
           onDestinationSelected: (i) => setState(() => selectedIndex = i),
-          backgroundColor: const Color(0xDDF2FBF5),
+          backgroundColor: const Color(0xDDF4F6FF),
           surfaceTintColor: Colors.transparent,
-          indicatorColor: const Color(0xFFC8EBD7),
+          indicatorColor: const Color(0xFFCBD6FF),
           destinations: const [
             NavigationDestination(icon: Icon(Icons.home_outlined), selectedIcon: Icon(Icons.home_rounded), label: 'الرئيسية'),
             NavigationDestination(icon: Icon(Icons.grid_view_rounded), label: 'الخدمات'),
@@ -196,11 +196,11 @@ class _SchoolHomeScreenState extends State<SchoolHomeScreen> {
     padding: const EdgeInsets.all(20),
     decoration: BoxDecoration(
       gradient: LinearGradient(
-        colors: [Colors.white.withValues(alpha: .78), const Color(0xFFD7F0E2).withValues(alpha: .62), const Color(0xFF9AD8B5).withValues(alpha: .72)],
+        colors: [Colors.white.withValues(alpha: .78), const Color(0xFFDCE4FF).withValues(alpha: .62), const Color(0xFF9DB2F5).withValues(alpha: .72)],
         begin: Alignment.topRight, end: Alignment.bottomLeft),
       borderRadius: BorderRadius.circular(23),
       border: Border.all(color: Colors.white.withValues(alpha: .85), width: 1.2),
-      boxShadow: [BoxShadow(color: const Color(0xFF368A62).withValues(alpha: .16), blurRadius: 24, offset: const Offset(0, 10))],
+      boxShadow: [BoxShadow(color: const Color(0xFF536FC4).withValues(alpha: .16), blurRadius: 24, offset: const Offset(0, 10))],
     ),
     child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       Row(children: [
@@ -260,7 +260,7 @@ class _SchoolHomeScreenState extends State<SchoolHomeScreen> {
                   colors: [Colors.white.withValues(alpha: .70), Colors.white.withValues(alpha: .28)],
                 ),
                 border: Border.all(color: Colors.white.withValues(alpha: .88), width: 1.1),
-                boxShadow: [BoxShadow(color: const Color(0xFF368A62).withValues(alpha: .10), blurRadius: 18, offset: const Offset(0, 7))],
+                boxShadow: [BoxShadow(color: const Color(0xFF526FC5).withValues(alpha: .10), blurRadius: 18, offset: const Offset(0, 7))],
               ),
               child: Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
                 Container(width: 43, height: 43,
