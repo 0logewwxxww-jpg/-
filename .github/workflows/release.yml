@@ -27,18 +27,20 @@ jobs:
       - name: Configure Android release signing
         working-directory: mobile
         env:
-          KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
-          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
-          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEYSTORE_BASE64: \${{ secrets.KEYSTORE_BASE64 }}
+          KEYSTORE_PASSWORD: \${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_PASSWORD: \${{ secrets.KEY_PASSWORD }}
+          KEY_ALIAS: \${{ secrets.KEY_ALIAS }}
         run: |
           test -n "$KEYSTORE_BASE64" || (echo "Missing KEYSTORE_BASE64 secret" && exit 1)
           test -n "$KEYSTORE_PASSWORD" || (echo "Missing KEYSTORE_PASSWORD secret" && exit 1)
+          test -n "$KEY_PASSWORD" || (echo "Missing KEY_PASSWORD secret" && exit 1)
           test -n "$KEY_ALIAS" || (echo "Missing KEY_ALIAS secret" && exit 1)
           mkdir -p android/app
           printf '%s' "$KEYSTORE_BASE64" | base64 --decode > android/app/jawadain-release.jks
           cat > android/key.properties <<EOF
           storePassword=$KEYSTORE_PASSWORD
-          keyPassword=$KEYSTORE_PASSWORD
+          keyPassword=$KEY_PASSWORD
           keyAlias=$KEY_ALIAS
           storeFile=app/jawadain-release.jks
           EOF
@@ -54,7 +56,7 @@ jobs:
           if "import java.util.Properties" not in source:
               source = imports + source
 
-          plugin_match = re.search(r"plugins\\s*\\{.*?\\}", source, re.S)
+          plugin_match = re.search(r"plugins\s*\{.*?\}", source, re.S)
           if not plugin_match:
               raise SystemExit("Could not locate plugins block in app/build.gradle.kts")
 
@@ -66,7 +68,7 @@ jobs:
           }
 
           """
-          source = source[:plugin_match.end()] + "\\n\\n" + signing_properties + source[plugin_match.end():]
+          source = source[:plugin_match.end()] + "\n\n" + signing_properties + source[plugin_match.end():]
 
           signing_config = """
               signingConfigs {
@@ -80,9 +82,9 @@ jobs:
 
           """
           if "signingConfigs {" not in source:
-              source = re.sub(r"(?m)^\\s*buildTypes\\s*\\{", signing_config + "    buildTypes {", source, count=1)
+              source = re.sub(r"(?m)^\s*buildTypes\s*\{", signing_config + "    buildTypes {", source, count=1)
           source = re.sub(
-              r'signingConfig\\s*=\\s*signingConfigs\\.getByName\\("debug"\\)',
+              r'signingConfig\s*=\s*signingConfigs\.getByName\("debug"\)',
               'signingConfig = signingConfigs.getByName("release")',
               source
           )
